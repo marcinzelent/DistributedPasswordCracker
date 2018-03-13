@@ -31,7 +31,7 @@ namespace PasswordCrackerServer
             StreamWriter sw = new StreamWriter(ns);
             sw.AutoFlush = true;
 
-            sw.WriteLine($"DPCP 1.0\n{pass}\n{chunk}");
+            sw.WriteLine($"DPCP 1.0\n{pass}\n{chunk}\n\n");
             //sw.WriteLine(pass);
             //sw.WriteLine(chunk);
             

@@ -21,26 +21,26 @@ namespace PasswordCrackerServer
             string users = "";
             foreach (UserInfo u in userInfos)
             {
-                users += u.ToString();
+                users += u + "|";
             }
             if (
-                File.Exists(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk0.txt")
+                File.Exists("chunk0.txt")
                 &&
-                File.Exists(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk1.txt")
+                File.Exists("chunk1.txt")
                 &&
-                File.Exists(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk2.txt")
+                File.Exists("chunk2.txt")
                 &&
-                File.Exists(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk3.txt")
+                File.Exists("chunk3.txt")
                 &&
-                File.Exists(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk4.txt")
+                File.Exists("chunk4.txt")
                 
                 )
             {
-                string chunk1String = File.ReadAllText(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk0.txt");
-                string chunk2String = File.ReadAllText(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk1.txt");
-                string chunk3String = File.ReadAllText(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk2.txt");
-                string chunk4String = File.ReadAllText(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk3.txt");
-                string chunk5String = File.ReadAllText(@"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk4.txt");
+                string chunk1String = File.ReadAllText("chunk0.txt");
+                string chunk2String = File.ReadAllText("chunk1.txt");
+                string chunk3String = File.ReadAllText("chunk2.txt");
+                string chunk4String = File.ReadAllText("chunk3.txt");
+                string chunk5String = File.ReadAllText("chunk4.txt");
 
 
                 allchunks = new List<string>()
@@ -71,31 +71,31 @@ namespace PasswordCrackerServer
                 string chunk1String = "";
                 foreach (string s1 in chunk1)
                 {
-                    chunk1String += s1 + "\n";
+                    chunk1String += s1 + "|";
                 }
                 List<string> chunk2 = new List<string>(words.GetRange(65000, 65000));
                 string chunk2String = "";
                 foreach (string s2 in chunk2)
                 {
-                    chunk2String += s2 + "\n";
+                    chunk2String += s2 + "|";
                 }
                 List<string> chunk3 = new List<string>(words.GetRange(130000, 65000));
                 string chunk3String = "";
                 foreach (string s3 in chunk3)
                 {
-                    chunk3String += s3 + "\n";
+                    chunk3String += s3 + "|";
                 }
                 List<string> chunk4 = new List<string>(words.GetRange(195000, 65000));
                 string chunk4String = "";
                 foreach (string s4 in chunk4)
                 {
-                    chunk4String += s4 + "\n";
+                    chunk4String += s4 + "|";
                 }
                 List<string> chunk5 = new List<string>(words.GetRange(260000, 51141));
                 string chunk5String = "" + " ";
                 foreach (string s5 in chunk5)
                 {
-                    chunk5String += s5 + "\n";
+                    chunk5String += s5 + "|";
                 }
                 allchunks = new List<string>()
                 {
@@ -107,7 +107,7 @@ namespace PasswordCrackerServer
                 };
 
 
-                string path = @"D:\Projects\S4\SEC\PasswordCrackerDistributed\PasswordCrackerServer\chunk";
+                string path = "chunk";
 
                 for (int i = 0; i < 5; i++)
                 {

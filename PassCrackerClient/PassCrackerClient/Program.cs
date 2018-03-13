@@ -25,14 +25,22 @@ namespace PassCrackerClient
             string dictionary = ParseData(data);
             string[,] splitDictionary = SplitDictionary(dictionary);
 
-            List<UserInfoClearText> result;
+            List<UserInfoClearText> result = new List<UserInfoClearText>();
             for(int i = 0; i < 5; i++)
             {
-                int rowLength = splitDictionary.GetLength(i);
+                int rowLength = splitDictionary.GetLength(1);
                 string[] chunk = new string[rowLength];
                 for (int j = 0; j < rowLength; j++)
                     chunk[j] = splitDictionary[i, j];
-                Task.Run(() => result = DecryptPassword(chunk));
+                result = DecryptPassword(chunk);
+            }
+            if (result.Count != 0)
+            {
+                sw.WriteLine(result[0].ToString());
+            }
+            else
+            {
+                sw.WriteLine("Nothing Found!");
             }
         }
 
@@ -43,7 +51,7 @@ namespace PassCrackerClient
             while (true)
             {
                 string message = sr.ReadLine();
-                if (message != "") data += message;
+                if (message != "") data += message + "\n";
                 else break;
             }
 
@@ -56,7 +64,8 @@ namespace PassCrackerClient
 
             if (splitData[0] == "DPCP 1.0")
             {
-                File.WriteAllText("password.txt", splitData[1]);
+                splitData[1] = splitData[1].Replace('|', '\n');
+                File.WriteAllText("passwords.txt", splitData[1]);
                 File.WriteAllText("dictionary.txt", splitData[2]);
             }
 
@@ -65,20 +74,21 @@ namespace PassCrackerClient
 
         private static string[,] SplitDictionary(string dictionary)
         {
-            string[] dicWords = dictionary.Split('\n');
+            string[] dicWords = dictionary.Split('|');
             int dicWordsLength = dicWords.Length;
             string[,] splitDictionary = new string[5,dicWordsLength/5];
             int offset = 0;
             int j = 0;
 
-            for(int i = 0; i < 5; i = i++)
+            for (int i = 0; i < 5; i++)
             {
-                while(j < dicWordsLength / 5)
-                { 
-                    splitDictionary[i,j] = dicWords[j + offset];
+                while (j < dicWordsLength/5)
+                {
+                    splitDictionary[i, j] = dicWords[j + offset];
                     j++;
                 }
-                offset += dicWordsLength / 5;
+                offset += dicWordsLength/5;
+                j = 0;
             }
 
             return splitDictionary;
