@@ -26,30 +26,34 @@ namespace DistributedPasswordCracker.Client
         /// <summary>
         /// Runs the password cracking algorithm
         /// </summary>
-        public List<UserInfoClearText> RunCracking(string [] dictionary)
+        public string RunCracking(string [] dictionary)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             List<UserInfo> userInfos =
                 PasswordFileHandler.ReadPasswordFile("passwords.txt");
-            Console.WriteLine("passwd opeend");
+            //Console.WriteLine("passwd opeend");
 
-            List<UserInfoClearText> result = new List<UserInfoClearText>();
+            List<UserInfoClearText> results = new List<UserInfoClearText>();
             
            for(int i = 0; i < dictionary.Length; i++)
            {
                     String dictionaryEntry = dictionary[i];
                     IEnumerable<UserInfoClearText> partialResult = CheckWordWithVariations(dictionaryEntry, userInfos);
-                    result.AddRange(partialResult);
+                    results.AddRange(partialResult);
            }
   
             stopwatch.Stop();
-            Console.WriteLine(string.Join(", ", result));
-            Console.WriteLine("Out of {0} password {1} was found ", userInfos.Count, result.Count);
-            Console.WriteLine();
-            Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
+            //Console.WriteLine(string.Join(", ", results));
+            //Console.WriteLine("Out of {0} password {1} was found ", userInfos.Count, results.Count);
+            //Console.WriteLine();
+            //Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
 
-            return result;
+            string output = "";
+            for(int i = 0; i < results.Count; i++)
+                output += $"{results[i].UserName}:{results[i].Password}|";
+
+            return output;
         }
 
         /// <summary>

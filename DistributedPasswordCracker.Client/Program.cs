@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using DistributedPasswordCracker.Client.Models;
 
 namespace DistributedPasswordCracker.Client
@@ -16,7 +17,7 @@ namespace DistributedPasswordCracker.Client
         static void Main(string[] args)
         {
             Console.Write("Connecting to server... ");
-            TcpClient clientSocket = new TcpClient("127.0.0.1", 6789);
+            TcpClient clientSocket = new TcpClient("127.0.0.1", 7777);
             NetworkStream ns = clientSocket.GetStream();
             Console.Write("OK\n");
             sr = new StreamReader(ns);
@@ -35,24 +36,37 @@ namespace DistributedPasswordCracker.Client
             string[,] splitDictionary = SplitDictionary(dictionary);
             if (splitDictionary[0,0] != "") Console.Write("OK\n");
 
-            List<UserInfoClearText> result = new List<UserInfoClearText>();
+            Console.WriteLine("Cracking...");
+            List<Task<string>> tasks = new List<Task<string>>();
             for(int i = 0; i < NumberOfTasks; i++)
             {
-                Console.Write("Running task no." + (i + 1) + "...\n" );
                 int rowLength = splitDictionary.GetLength(1);
                 string[] chunk = new string[rowLength];
                 for (int j = 0; j < rowLength; j++)
                     chunk[j] = splitDictionary[i, j];
-                result = DecryptPassword(chunk);
+                tasks.Add(Task.Run(()=>DecryptPassword(chunk)));
             }
-            if (result.Count != 0)
+            
+            var result = Task.WhenAll(tasks).Result;
+            if (result.Length != 0)
             {
-                sw.WriteLine(result[0].ToString());
+                string output = "";
+                for (int i = 0; i < result.Length; i++)
+                    output += result[i];
+                
+                Console.Write("Sending results to server...");
+                sw.WriteLine(output);
+                Console.Write("OK\n");
             }
-            else
+            else 
             {
-                sw.WriteLine("Nothing Found!");
+                Console.Write("FAILED\n");
+                Console.Write("Sending notification to server...");
+                sw.WriteLine("No passwords cracked!");
+                Console.Write("OK\n");
             }
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
         }
 
         private static string GetData()
@@ -105,12 +119,12 @@ namespace DistributedPasswordCracker.Client
             return splitDictionary;
         }
 
-        private static List<UserInfoClearText> DecryptPassword(string[] dictionary)
+        private static async Task<string> DecryptPassword(string[] dictionary)
         {
             Cracking cracker = new Cracking();
             var result = cracker.RunCracking(dictionary);
 
             return result;
-}
+        }
     }
 }
