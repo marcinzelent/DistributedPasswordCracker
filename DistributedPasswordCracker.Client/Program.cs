@@ -36,7 +36,7 @@ namespace DistributedPasswordCracker.Client
             string[,] splitDictionary = SplitDictionary(dictionary);
             if (splitDictionary[0,0] != "") Console.Write("OK\n");
 
-            Console.WriteLine("Cracking...");
+            Console.Write("Cracking... \n\n");
             List<Task<string>> tasks = new List<Task<string>>();
             for(int i = 0; i < NumberOfTasks; i++)
             {
@@ -54,7 +54,7 @@ namespace DistributedPasswordCracker.Client
                 for (int i = 0; i < result.Length; i++)
                     output += result[i];
                 
-                Console.Write("Sending results to server...");
+                Console.Write("\nSending results to server...");
                 sw.WriteLine(output);
                 Console.Write("OK\n");
             }
@@ -62,10 +62,11 @@ namespace DistributedPasswordCracker.Client
             {
                 Console.Write("FAILED\n");
                 Console.Write("Sending notification to server...");
-                sw.WriteLine("No passwords cracked!");
+                sw.WriteLine();
                 Console.Write("OK\n");
             }
-            Console.WriteLine("Press any key to exit...");
+
+            Console.Write("\nPress any key to exit...");
             Console.ReadKey();
         }
 
@@ -119,7 +120,7 @@ namespace DistributedPasswordCracker.Client
             return splitDictionary;
         }
 
-        private static async Task<string> DecryptPassword(string[] dictionary)
+        private static string DecryptPassword(string[] dictionary)
         {
             Cracking cracker = new Cracking();
             var result = cracker.RunCracking(dictionary);

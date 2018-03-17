@@ -16,16 +16,28 @@ namespace DistributedPasswordCracker.Server
 
         static void Main(string[] args)
         {
+            Console.Write("Reading passwords file... ");
             List<UserInfo> userInfos = PasswordFileHandler.ReadPasswordFile("passwords.txt");
-            List<string> allChunks =  new List<string>();
 
             string users = "";
             foreach (UserInfo u in userInfos)
                 users += u + "|";
+            if (users != "") Console.Write("OK\n");
+            else Console.Write("FAILED\n");
 
+            Console.Write("Reading dictionary file... ");
             var dictionary = File.ReadAllText("dictionary.txt");
             dictionary = dictionary.Replace('\n', '|');
+            if (dictionary != "") Console.Write("OK\n");
+            else Console.Write("FAILED\n");
+
+            Console.Write("Splitting dictionary... ");
             var splitDictionary = SplitDictionary(dictionary);
+            if (splitDictionary.Length != 0) Console.Write("OK\n");
+            else Console.Write("FAILED\n");
+
+            List<string> allChunks =  new List<string>();
+
             for (int i = 0; i < splitDictionary.GetLength(0); i++)
             {
                 StringBuilder chunk = new StringBuilder();
@@ -36,11 +48,11 @@ namespace DistributedPasswordCracker.Server
                 }
                 allChunks.Add(chunk.ToString());
             }
-
+            
+            Console.Write("Starting server... ");
             TcpListener serverSocket = new TcpListener(IPAddress.Any, 7777);
             serverSocket.Start();
-
-            Console.WriteLine("Server started.");
+            Console.Write("OK\n");
             
             List<Task<string>> tasks = new List<Task<string>>();
 
@@ -49,12 +61,21 @@ namespace DistributedPasswordCracker.Server
                 var chunk = allChunks[i];
                 tasks.Add(Task.Run(()=>RunClientAsync(serverSocket, users, chunk)));
             }
+            Console.Write("Waiting for clients' response... ");
             string[] result = Task.WhenAll(tasks).Result;
+            Console.Write("OK\n\n");
 
+            string output = "";
             foreach (string s in result)
-                Console.WriteLine(s);
-
+                output += s;
+            
+            output = output.Replace(':', ' ').Replace('|', '\n');
+            Console.Write(output);
+            
             serverSocket.Stop();
+
+            Console.Write("\nPress any key to exit...");
+            Console.ReadKey();
         }
 
         private static string[,] SplitDictionary(string dictionary)
@@ -81,7 +102,7 @@ namespace DistributedPasswordCracker.Server
 
         private async static Task<string> RunClientAsync(TcpListener serverSocket, string pass, string chunk)
         {
-            TcpClient connectionSocket = serverSocket.AcceptTcpClient();;
+            TcpClient connectionSocket = serverSocket.AcceptTcpClient();
             Stream ns = connectionSocket.GetStream();
             StreamReader sr = new StreamReader(ns);
             StreamWriter sw = new StreamWriter(ns)
