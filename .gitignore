@@ -286,3 +286,6 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+DistributedPasswordCracker.Client/passwords.txt
+DistributedPasswordCracker.Client/dictionary.txt
