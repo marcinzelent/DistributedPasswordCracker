@@ -1,37 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PasswordCrackerServer
 {
     class clientConnection
     {
-        public TcpClient connectionSocket { get; set; }
-        public string chunk { get; set; }
-
-        public string pass { get; set; }
+        public TcpClient ConnectionSocket { get; set; }
+        public string Chunk { get; set; }
+        public string Pass { get; set; }
 
 
         public clientConnection(TcpClient connectionSocket, string chunk, string pass)
         {
-            this.connectionSocket = connectionSocket;
-            this.chunk = chunk;
-            this.pass = pass;
+            ConnectionSocket = connectionSocket;
+            Chunk = chunk;
+            Pass = pass;
         }
 
-        public async Task<string> Doit()
+        public async Task<string> SendToClient()
         {
-            Stream ns = connectionSocket.GetStream();
+            Stream ns = ConnectionSocket.GetStream();
             StreamReader sr = new StreamReader(ns);
+            StreamWriter sw = new StreamWriter(ns)
+            {
+                AutoFlush = true
+            };
 
-            StreamWriter sw = new StreamWriter(ns);
-            sw.AutoFlush = true;
-
-            sw.WriteLine($"DPCP 1.0\n{pass}\n{chunk}\n\n");
+            sw.WriteLine($"DPCP 1.0\n{Pass}\n{Chunk}\n\n");
             //sw.WriteLine(pass);
             //sw.WriteLine(chunk);
             
